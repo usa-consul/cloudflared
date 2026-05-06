@@ -23,9 +23,10 @@ var (
 
 func main() {
 	// Configure zerolog with human-friendly console output
+	// Using time.Kitchen for shorter, more readable timestamps in local dev
 	log.Logger = log.Output(zerolog.ConsoleWriter{
 		Out:        os.Stderr,
-		TimeFormat: time.RFC3339,
+		TimeFormat: time.Kitchen,
 	})
 
 	app := &cli.App{
