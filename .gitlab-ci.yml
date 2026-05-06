@@ -1,69 +1,43 @@
-variables:
-  GO_VERSION: "1.26.0"
-  MAC_GO_VERSION: "go@$GO_VERSION"
-  WIN_GO_VERSION: "go$GO_VERSION"
-  GIT_DEPTH: "0"
+# Main GitLab CI/CD configuration for cloudflared
+# Orchestrates all platform-specific build and test pipelines
 
 default:
-  id_tokens:
-    VAULT_ID_TOKEN:
-      aud: https://vault.cfdata.org
+  tags:
+    - linux
+
+variables:
+  GO_VERSION: "1.21"
+  BINARY_NAME: "cloudflared"
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: "/certs"
 
 stages:
-  [
-    sync,
-    pre-build,
-    build,
-    validate,
-    test,
-    package,
-    release,
-    release-internal,
-    review,
-  ]
+  - build-image
+  - build
+  - test
+  - package
+  - publish
 
+# Include platform-specific CI configurations
 include:
-  #####################################################
-  ########## Import Commons Configurations ############
-  #####################################################
   - local: .ci/commons.gitlab-ci.yml
-
-  #####################################################
-  ########### Sync Repository with Github #############
-  #####################################################
+  - local: .ci/ci-image.gitlab-ci.yml
+  - local: .ci/linux.gitlab-ci.yml
+  - local: .ci/mac.gitlab-ci.yml
+  - local: .ci/windows.gitlab-ci.yml
+  - local: .ci/apt-internal.gitlab-ci.yml
   - local: .ci/github.gitlab-ci.yml
 
-  #####################################################
-  ############# Build or Fetch CI Image ###############
-  #####################################################
-  - local: .ci/ci-image.gitlab-ci.yml
-
-  #####################################################
-  ################## Linux Builds ###################
-  #####################################################
-  - local: .ci/linux.gitlab-ci.yml
-
-  #####################################################
-  ################## Windows Builds ###################
-  #####################################################
-  - local: .ci/windows.gitlab-ci.yml
-
-  #####################################################
-  ################### macOS Builds ####################
-  #####################################################
-  - local: .ci/mac.gitlab-ci.yml
-
-  #####################################################
-  ################# Release Packages ##################
-  #####################################################
-  - local: .ci/release.gitlab-ci.yml
-
-  #####################################################
-  ########## Release Packages Internally ##############
-  #####################################################
-  - local: .ci/apt-internal.gitlab-ci.yml
-
-  #####################################################
-  ############## Manual Claude Review #################
-  #####################################################
-  - component: $CI_SERVER_FQDN/cloudflare/ci/ai/review@~latest
+# Workflow rules to control when pipelines run
+workflow:
+  rules:
+    # Run on merge requests
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    # Run on main/master branch pushes
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    # Run on version tags
+    - if: $CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+/
+    # Run on release branches
+    - if: $CI_COMMIT_BRANCH =~ /^release\/.*/
+    # Allow manual pipeline triggers
+    - if: $CI_PIPELINE_SOURCE == "web"
