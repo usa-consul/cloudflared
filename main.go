@@ -53,8 +53,10 @@ func main() {
 				EnvVars: []string{"TUNNEL_DEBUG"},
 			},
 			&cli.StringFlag{
-				Name:    "loglevel",
-				Value:   "info",
+				Name:  "loglevel",
+				// Changed default from "info" to "warn" to reduce noise in normal operation.
+				// Use --loglevel=info or --debug to get more verbose output when needed.
+				Value:   "warn",
 				Usage:   "Log level (debug, info, warn, error, fatal)",
 				EnvVars: []string{"TUNNEL_LOGLEVEL"},
 			},
