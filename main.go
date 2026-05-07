@@ -78,6 +78,10 @@ func main() {
 			// Default action: show help
 			return cli.ShowAppHelp(c)
 		},
+		// ExitErrHandler suppresses the default "exit status 1" message that cli
+		// prints when an action returns an error, since we already log it via
+		// log.Fatal below.
+		ExitErrHandler: func(c *cli.Context, err error) {},
 	}
 
 	if err := app.Run(os.Args); err != nil {
