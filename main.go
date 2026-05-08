@@ -85,6 +85,9 @@ func main() {
 		// Suggest similar commands when a user mistypes a subcommand name.
 		// Handy for muscle-memory mistakes like "tunel" instead of "tunnel".
 		SuggestAfterError: true,
+		// EnableBashCompletion allows tab-completion of subcommands and flags in
+		// bash/zsh when the shell completion script is sourced. Useful day-to-day.
+		EnableBashCompletion: true,
 	}
 
 	if err := app.Run(os.Args); err != nil {
