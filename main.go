@@ -82,6 +82,9 @@ func main() {
 		// prints when an action returns an error, since we already log it via
 		// log.Fatal below.
 		ExitErrHandler: func(c *cli.Context, err error) {},
+		// Suggest similar commands when a user mistypes a subcommand name.
+		// Handy for muscle-memory mistakes like "tunel" instead of "tunnel".
+		SuggestAfterError: true,
 	}
 
 	if err := app.Run(os.Args); err != nil {
