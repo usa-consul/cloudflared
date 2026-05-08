@@ -64,6 +64,9 @@ func main() {
 		Before: func(c *cli.Context) error {
 			if c.Bool("debug") {
 				zerolog.SetGlobalLevel(zerolog.DebugLevel)
+				// Print a visible reminder that debug logging is active, since it
+				// can be quite noisy and easy to forget you left it enabled.
+				log.Debug().Msg("debug logging enabled")
 				return nil
 			}
 
