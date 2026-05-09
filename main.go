@@ -91,6 +91,10 @@ func main() {
 		// EnableBashCompletion allows tab-completion of subcommands and flags in
 		// bash/zsh when the shell completion script is sourced. Useful day-to-day.
 		EnableBashCompletion: true,
+		// HideHelpCommand hides the auto-generated "help" subcommand from the
+		// command list, keeping the output cleaner. Help is still accessible via
+		// --help / -h on any command.
+		HideHelpCommand: true,
 	}
 
 	if err := app.Run(os.Args); err != nil {
