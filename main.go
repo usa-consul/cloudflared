@@ -75,6 +75,9 @@ func main() {
 				return fmt.Errorf("invalid log level %q: %w", c.String("loglevel"), err)
 			}
 			zerolog.SetGlobalLevel(level)
+			// Log the active level at debug so it's visible when troubleshooting
+			// log verbosity issues without cluttering normal output.
+			log.Debug().Str("level", level.String()).Msg("log level set")
 			return nil
 		},
 		Action: func(c *cli.Context) error {
@@ -92,12 +95,4 @@ func main() {
 		// bash/zsh when the shell completion script is sourced. Useful day-to-day.
 		EnableBashCompletion: true,
 		// HideHelpCommand hides the auto-generated "help" subcommand from the
-		// command list, keeping the output cleaner. Help is still accessible via
-		// --help / -h on any command.
-		HideHelpCommand: true,
-	}
-
-	if err := app.Run(os.Args); err != nil {
-		log.Fatal().Err(err).Msg("cloudflared exited with error")
-	}
-}
+		// command li
